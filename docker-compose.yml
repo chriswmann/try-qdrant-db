@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: DockerfileQdrant
-    restart: always
+    restart: on-failure
     container_name: qdrant
     ports:
       - 6333:6333

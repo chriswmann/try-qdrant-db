@@ -1,9 +1,8 @@
 use clap::{Parser, ValueEnum};
 
 use qdrant_client::qdrant::{
-    Condition,
-    CreateCollectionBuilder, Distance, Filter, PointStruct, SearchPointsBuilder, UpsertPointsBuilder,
-    VectorParamsBuilder,
+    Condition, CreateCollectionBuilder, Distance, Filter, PointStruct, SearchPointsBuilder,
+    UpsertPointsBuilder, VectorParamsBuilder,
 };
 use qdrant_client::{Payload, Qdrant};
 
@@ -57,7 +56,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 CreateCollectionBuilder::new(collection_name)
                     .vectors_config(VectorParamsBuilder::new(ndims as u64, Distance::Cosine)),
             )
-        .await?;
+            .await?;
     } else {
         println!("Collection {collection_name} exists!");
     }
@@ -69,7 +68,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             Payload::try_from(json!(
                 {"item_id": "item001", "make": "Jaguar", "model": "F-Type", "year": 2015}
             ))
-                .unwrap(),
+            .unwrap(),
         ),
         PointStruct::new(
             2,
@@ -77,7 +76,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             Payload::try_from(json!(
             {"item_id": "item002", "make": "Ford", "model": "GT-40", "year": 1972}
             ))
-                .unwrap(),
+            .unwrap(),
         ),
         PointStruct::new(
             3,
@@ -85,26 +84,39 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             Payload::try_from(json!(
             {"item_id": "item003", "make": "Jaguar", "model": "E-Type", "year": 1969}
             ))
-                .unwrap(),
+            .unwrap(),
         ),
     ];
 
     let response = client
         .upsert_points(UpsertPointsBuilder::new(collection_name, points).wait(true))
-    .await?;
+        .await?;
 
     dbg!(response);
 
     let search_result = client
         .search_points(
-            SearchPointsBuilder::new(collection_name, vec![1.2; ndims], 3).filter(Filter::all([Condition::matches(
-                "model",
-                "E-Type".to_string(),
-            )])).with_payload(true),
+            SearchPointsBuilder::new(collection_name, vec![1.2; ndims], 3)
+                .filter(Filter::all([Condition::matches(
+                    "model",
+                    "E-Type".to_string(),
+                )]))
+                .with_payload(true),
         )
-    .await?;
+        .await?;
 
     dbg!(search_result);
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_db_host_to_possible_args_gives_expected_results() {
+        assert_eq!(DbHost::Local.to_possible_value(), Some("local"));
+        assert_eq!(DbHost::Docker.to_possible_value(), Some("docker"));
+    }
 }

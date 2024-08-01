@@ -328,6 +328,7 @@ dependencies = [
  "clap",
  "qdrant-client",
  "serde",
+ "serde_json",
  "tokio",
 ]
 
