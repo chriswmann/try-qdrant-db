@@ -11,7 +11,6 @@ services:
     expose:
       - 6333
       - 6334
-      - 6335
     configs:
       - source: qdrant_config
         target: /qdrant/config/production.yaml
@@ -32,3 +31,4 @@ configs:
     content: |
       log_level: DEBUG
       grpc_port: 6334
+      telemetry_disabled: false
